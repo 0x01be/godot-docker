@@ -26,5 +26,7 @@ RUN git clone --depth 1 --branch ${GODOT_REVISION} https://github.com/godotengin
 
 WORKDIR /godot
 
+RUN apk add libexecinfo-dev
+RUN sed -i.bak 's/size_t size = backtrace.*/size_t size = 0;/g' /godot/platform/linuxbsd/crash_handler_linuxbsd.cpp
 RUN scons platform=linuxbsd
 
