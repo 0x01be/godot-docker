@@ -28,5 +28,6 @@ WORKDIR /godot
 
 RUN apk add libexecinfo-dev
 RUN sed -i.bak 's/size_t size = backtrace.*/size_t size = 0;/g' /godot/platform/linuxbsd/crash_handler_linuxbsd.cpp
+RUN sed -i.bak 's/.*backtrace_symbols/char **strings = NULL;/g' /godot/platform/linuxbsd/crash_handler_linuxbsd.cpp
 RUN scons platform=linuxbsd
 
