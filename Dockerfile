@@ -1,33 +1,39 @@
-FROM alpine as build
+FROM 0x01be/godot:build as build
 
-RUN apk add --no-cache --virtual godot-build-dependencies \
-    git \
-    build-base \
-    cmake \
-    pkgconfig \
-    scons \
-    mesa-dev \
-    libx11-dev \
-    libxcursor-dev \
-    libxinerama-dev \
-    libxi-dev \
-    libxrandr-dev \
-    libexecinfo-dev \
-    yasm-dev \
-    linux-headers \
-    eudev-dev \
-    alsa-lib-dev \
-    pulseaudio-dev \
+FROM 0x01be/xpra
+
+COPY --from=build /godot/bin/godot.linuxbsd.tools.64 /opt/godot/bin/godot
+
+USER root
+RUN apk add --no-cache --virtual godot-runtime-dependencies \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+    godot \
+    mesa \
+    libx11 \
+    libxcursor \
+    libxinerama \
+    libxi \
+    libxrandr \
+    libexecinfo \
+    yasm \
+    eudev \
+    alsa-lib \
+    pulseaudio \
     pulseaudio-alsa \
-    alsa-plugins-pulse
+    alsa-plugins-pulse \
+    mesa-dri-swrast
 
-ENV GODOT_REVISION master
-RUN git clone --depth 1 --branch ${GODOT_REVISION} https://github.com/godotengine/godot.git /godot
+RUN mkdir -p /tmp/.X11-unix
+RUN chmod 1777 /tmp/.X11-unix
 
-WORKDIR /godot
+RUN mkdir -p /home/xpra/.config/pulse
+RUN chown -R xpra:xpra /home/xpra
 
-RUN apk add libexecinfo-dev
-RUN sed -i.bak 's/size_t size = backtrace.*/size_t size = 0;/g' /godot/platform/linuxbsd/crash_handler_linuxbsd.cpp
-RUN sed -i.bak 's/.*backtrace_symbols/char **strings = NULL;/g' /godot/platform/linuxbsd/crash_handler_linuxbsd.cpp
-RUN scons platform=linuxbsd
+WORKDIR /home/xpra/.config/pulse
+
+USER xpra
+
+ENV COMMAND godot
 
