@@ -28,9 +28,6 @@ RUN apk add --no-cache --virtual godot-runtime-dependencies \
 RUN mkdir -p /tmp/.X11-unix
 RUN chmod 1777 /tmp/.X11-unix
 
-RUN apk add git
-RUN git clone --depth 1 https://github.com/Orama-Interactive/Pixelorama.git /home/xpra/Pixelorama
-RUN git clone --depth 1 https://github.com/godotengine/godot-demo-projects.git /home/xpra/Demos
 RUN mkdir -p /home/xpra/.config/pulse
 RUN chown -R xpra:xpra /home/xpra
 
