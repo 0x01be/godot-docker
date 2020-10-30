@@ -1,7 +1,6 @@
 FROM 0x01be/xpra
 
-USER root
-RUN apk add --no-cache --virtual godot-runtime-dependencies \
+RUN apk add --no-cache --virtual godot-dependencies \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
@@ -22,8 +21,5 @@ RUN apk add --no-cache --virtual godot-runtime-dependencies \
     mesa-dri-swrast
 
 USER xpra
-
-RUN mkdir -p /home/xpra/.config/pulse
-
 ENV COMMAND godot
 
