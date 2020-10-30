@@ -1,9 +1,12 @@
-FROM 0x01be/godot:build as build
+FROM alpine as build
+
+RUN apk add git &&\
+    git clone --depth 1 https://github.com/Orama-Interactive/Pixelorama.git /Pixelorama &&\
+    git clone --depth 1 https://github.com/godotengine/godot-demo-projects.git /Demos
 
 FROM 0x01be/xpra
 
-USER root
-RUN apk add --no-cache --virtual godot-runtime-dependencies \
+RUN apk add --no-cache --virtual godot-dependencies \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/community \
     --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
@@ -23,12 +26,8 @@ RUN apk add --no-cache --virtual godot-runtime-dependencies \
     alsa-plugins-pulse \
     mesa-dri-swrast
 
-COPY --from=build /godot/bin/godot.linuxbsd.tools.64 /opt/godot/bin/godot
-
-RUN apk add git
-RUN git clone --depth 1 https://github.com/Orama-Interactive/Pixelorama.git /home/xpra/Pixelorama
-RUN git clone --depth 1 https://github.com/godotengine/godot-demo-projects.git /home/xpra/Demos
-RUN mkdir -p /home/xpra/.config/pulse
+COPY --from=build /Pixelorama/ /home/xpra/Pixelorama/
+COPY --from=build /Demos/ /home/xpra/Demos/
 RUN chown -R xpra:xpra /home/xpra
 
 USER xpra
